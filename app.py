@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import re
 import shutil
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_community.vectorstores import FAISS
