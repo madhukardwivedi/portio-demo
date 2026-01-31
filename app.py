@@ -128,8 +128,11 @@ if prompt := st.chat_input("Ex: What happens if the issuer goes bankrupt?"):
             context_str += f"[{i}] SOURCE: {d.metadata.get('clause', 'Unknown')}\n{d.page_content}\n\n"
 
         llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
-        system_prompt = "You are a Legal Auditor. Answer using ONLY the context. Cite clauses."
-
+        system_prompt = """You are a precise Legal Auditor. Answer using ONLY the context provided.
+                    - Cite specific clauses for every claim (e.g. "Clause 10 states...").
+                    - If clauses like 'Limited Recourse' and 'Events of Default' conflict, explain how they interact.
+                    - Keep it professional and concise.
+                    """
         rag_prompt = ChatPromptTemplate.from_messages([
             ("system", system_prompt),
             ("user", f"Question: {prompt}\n\nContext:\n{context_str}")
