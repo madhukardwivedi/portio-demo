@@ -126,14 +126,12 @@ if prompt := st.chat_input("Ex: What happens if the issuer goes bankrupt?"):
                 context_str += f"[{i}] SOURCE: {d.metadata.get('clause', 'Unknown')}\n{d.page_content}\n\n"
 
             # 3. Generate Answer (UPDATED FOR VERBOSITY)
-            llm = ChatOpenAI(model="gpt-4o", temperature=0) # Using GPT-4o for best logic
+            llm = ChatOpenAI(model="gpt-4o-mini", temperature=0) # Using GPT-4o for best logic
             
-            system_prompt = """You are a meticulous Legal Auditor. Answer the user's question using ONLY the context provided.
-            
-            GUIDELINES:
-            1. **Be Comprehensive:** Do not summarize. Explain the *interaction* between clauses (e.g., how Default relates to Deferral).
-            2. **Cite & Quote:** Explicitly quote the text when possible (e.g., 'As stated in Clause 6: "..."').
-            3. **Format:** Use paragraphs for readability. The user wants a detailed legal explanation, not a quick summary.
+            system_prompt = """You are a precise Legal Auditor. Answer using ONLY the context provided.
+            - Cite specific clauses for every claim (e.g. "Clause 10 states...").
+            - If clauses like 'Limited Recourse' and 'Events of Default' conflict, explain how they interact.
+            - Keep it professional and concise.
             """
             
             rag_prompt = ChatPromptTemplate.from_messages([
@@ -148,7 +146,7 @@ if prompt := st.chat_input("Ex: What happens if the issuer goes bankrupt?"):
             st.session_state.messages.append({"role": "assistant", "content": response})
 
             # --- AUDITOR VIEW (TABULAR STYLE) ---
-            with st.expander("🔎 Auditor View (Source Citations)", expanded=True):
+            with st.expander("🔎 Auditor View (Source Citations)", expanded=False):
                 for i, d in enumerate(docs):
                     # This layout creates the clean "Table" look
                     col1, col2 = st.columns([1, 4])
